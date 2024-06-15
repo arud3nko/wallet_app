@@ -1,5 +1,5 @@
 from ..types.transaction import Transaction
-from ..types.wallet import Wallet
+from wallet.core.wallet import Wallet
 
 
 class TopUpBalance(Transaction):
