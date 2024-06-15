@@ -7,7 +7,7 @@ from typing import Callable
 from .base import Transaction
 
 
-class TransactionMiddleware:
+class TransactionMiddleware(ABC):
     @abstractmethod
     def __call__(self, transaction: Transaction, call_next: Callable):
         pass

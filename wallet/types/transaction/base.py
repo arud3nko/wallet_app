@@ -5,7 +5,7 @@ from typing import Optional
 
 from uuid import uuid4
 
-from wallet.core.wallet import Wallet
+from ...core.wallet import Wallet
 
 
 class Transaction(ABC):

@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from uuid import uuid4
 
-from wallet.types.currency import Currency
+from wallet.core.currency import Currency
 
 
 class Wallet:
