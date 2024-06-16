@@ -1,8 +1,11 @@
 from __future__ import annotations
 
+from typing import TYPE_CHECKING
+
 from uuid import uuid4
 
-from wallet.core.currency import Currency
+if TYPE_CHECKING:
+    from ..core.currency import Currency
 
 
 class Wallet:
@@ -14,11 +17,18 @@ class Wallet:
 
     @property
     def id(self) -> str:
+        """Returns unique wallet identifier"""
         return self._id
 
     @property
     def balance(self) -> float:
+        """Returns wallet balance"""
         return self._balance
+
+    @property
+    def currency(self) -> str:
+        """Returns wallet currency code"""
+        return self._currency.code
 
     @balance.setter
     def balance(self, val: float) -> None:
