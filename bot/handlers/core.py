@@ -56,7 +56,7 @@ async def start_auth(
             "registration.html",
             button=buttons.ReplyButtons.Start
         ),
-        reply_markup=None
+        reply_markup=ReplyKeyboardRemove()
     )
 
 
