@@ -3,6 +3,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, Union
 
 from aiogram.fsm.context import FSMContext
+from aiogram.types import ReplyKeyboardRemove
 
 from ..keyboards import buttons, reply, inline
 from ..template_engine import render_template
@@ -46,7 +47,7 @@ async def start_auth(
             text=render_template(
                 "login.html"
             ),
-            reply_markup=None
+            reply_markup=ReplyKeyboardRemove()
         )
 
     await update.bot.send_message(
