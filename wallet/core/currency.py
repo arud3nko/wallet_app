@@ -1,10 +1,9 @@
 from __future__ import annotations
 
-from dataclasses import dataclass
+from pydantic import BaseModel
 
 
-@dataclass
-class Currency:
+class Currency(BaseModel):
     """Currency dataclass"""
     code: str
     rate: float

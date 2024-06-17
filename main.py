@@ -1,55 +1,58 @@
-from typing import Callable
+import asyncio
+from typing import Tuple
+
+from aiogram import Bot, Dispatcher
+from fastapi import FastAPI
+from uvicorn import Config, Server
+from bot.app import get_app
+
+from db.engine import engine
+
+from api.bot import BotAPIRoutes
+from api.bot import router as bot_api_router
 
 from wallet.wallet_handler import WalletHandler
-from wallet.core.currency import Currency
-from wallet.transactions import TopUpBalance, Transfer
-from wallet.types.transaction import TransactionMiddleware, Transaction
+from middlewares import LoggingPostMiddleware
 
 
-class LoggingPreMiddleware(TransactionMiddleware):
+def setup_bot() -> Tuple[Bot, Dispatcher]:
+    """Setting up bot's params"""
+    handler = WalletHandler()
+    bot, dp = get_app(handler)
 
-    def __call__(self, transaction: Transaction, call_next: Callable):
-        print(f"Attempt to make transaction: {transaction}")
-        call_next()
+    handler.transaction_handler.add_post_middleware(LoggingPostMiddleware())
 
+    bot_api_router.bot = bot
+    bot_api_router.session_engine = engine
 
-class HandleZeroAndMinusTransactionAmount(TransactionMiddleware):
-
-    def __call__(self, transaction: Transaction, call_next: Callable):
-        if transaction.amount <= 0:
-            print("Incorrect Top Up balance")
-            return
-        call_next()
+    return bot, dp
 
 
-class LoggingPostMiddleware(TransactionMiddleware):
+def setup_app() -> FastAPI:
+    """Setting up API"""
+    app = FastAPI()
+    app.include_router(bot_api_router, prefix=BotAPIRoutes.PREFIX)
 
-    def __call__(self, transaction: Transaction, call_next: Callable):
-        print(f"Transaction completed. Destination balance: {transaction.dest.balance}")
-        call_next()
-
-
-rub = Currency("RUB", 95)
-
-eur = Currency("RUB", 110)
+    return app
 
 
-handler = WalletHandler()
-handler.transaction_handler.add_pre_middleware(LoggingPreMiddleware())
-handler.transaction_handler.add_pre_middleware(HandleZeroAndMinusTransactionAmount())
-handler.transaction_handler.add_post_middleware(LoggingPostMiddleware())
+async def start_app(bot: Bot, dp: Dispatcher, app: FastAPI):
+    """Starting app locally using Uvicorn"""
+    config = Config(app, host="127.0.0.1", port=8000, loop="asyncio")
+    server = Server(config)
 
-wallet = handler.new_wallet(rub)
+    polling_task = asyncio.create_task(dp.start_polling(bot))
+    server_task = asyncio.create_task(server.serve())
 
-friend_wallet = handler.new_wallet(eur)
-
-birthday_gift = TopUpBalance(wallet, 1113)
-
-trans = Transfer(wallet, friend_wallet, 10000)
-
-handler.provide(birthday_gift)
-
-handler.provide(trans)
+    await asyncio.gather(polling_task, server_task)
 
 
-print(wallet.balance, friend_wallet.balance)
+def main():
+    """Entry point"""
+    bot, dp = setup_bot()
+    app = setup_app()
+    asyncio.run(start_app(bot, dp, app))
+
+
+if __name__ == "__main__":
+    main()

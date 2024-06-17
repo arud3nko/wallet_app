@@ -12,8 +12,8 @@ from wallet.transactions import TopUpBalance, Transfer
 class TestTransactions:
     @pytest.fixture()
     def wallets_pair(self) -> Tuple[Wallet, Wallet]:
-        rub = Currency("RUB", 95)
-        src, dest = Wallet(rub), Wallet(rub)
+        rub = Currency(code="RUB", rate=95)
+        src, dest = Wallet(user_id=1, id="1", currency=rub), Wallet(user_id=1, id="1", currency=rub)
         src.balance += 1000
         return src, dest
 

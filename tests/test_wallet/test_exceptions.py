@@ -11,21 +11,21 @@ from wallet.exceptions import IncompatibleCurrencies, NotEnoughBalance, Transact
 class TestWalletExceptions:
     @pytest.fixture()
     def currency(self) -> Currency:
-        return Currency("RUB", 100)
+        return Currency(code="RUB", rate=100)
 
     @pytest.fixture()
     def empty_wallet(self, currency: Currency) -> Wallet:
-        return Wallet(currency=currency)
+        return Wallet(user_id=1, id="1", currency=currency)
 
     @pytest.fixture()
     def not_empty_wallet(self, currency: Currency) -> Wallet:
-        _ = Wallet(currency=currency)
+        _ = Wallet(user_id=1, id="1", currency=currency)
         _.balance += 1000
         return _
 
     @pytest.fixture()
-    def eur_wallet(self, currency=Currency("EUR", 100)):
-        return Wallet(currency=currency)
+    def eur_wallet(self, currency=Currency(code="EUR", rate=100)):
+        return Wallet(user_id=1, id="1", currency=currency)
 
     @pytest.fixture()
     def handler(self) -> WalletHandler:

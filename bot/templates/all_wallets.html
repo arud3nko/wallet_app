@@ -1,0 +1,10 @@
+<b>You requested all wallets list 🚑</b>
+
+
+{% for wallet in wallets %}
+ID: <b>{{wallet.id}}</b>
+Currency: <b>{{wallet.currency.code}}</b>
+Balance: <b>{{wallet.balance}}</b>
+
+-------------
+{% endfor %}
