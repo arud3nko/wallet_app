@@ -51,17 +51,17 @@ async def get_all_wallets(
 async def create_wallet(
         session: AsyncSession,
         user_id: int,
-        currency_id: int,
-        wallet_id: str = uuid4().__str__().split("-")[0]) -> Wallet:
+        currency_id: int) -> Wallet:
     """
     Saves wallet data to Database
 
     :param session: `AsyncSession` instance
-    :param wallet_id: An unique wallet identifier
     :param user_id: Owner's identifier
     :param currency_id: Currency identifier
     :return: Created `Wallet`
     """
+
+    wallet_id = uuid4().__str__().split("-")[0]
 
     _wallet = Wallet(
         id=wallet_id,
